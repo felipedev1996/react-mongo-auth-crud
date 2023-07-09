@@ -6,8 +6,10 @@ export const register = async (req, res) => {
   const { email, password, username } = req.body;
 
   try {
-    const userExists = await User.findOne({ email });
-    if (!userExists) {
+    const userFound = await User.findOne({ email });
+    if (userFound) return res.status(400).json( ['Email already exists'] );  
+
+
       const passwordHash = await bcrypt.hash(password, 10);
 
       const newUser = new User({ email, password: passwordHash, username });
@@ -27,11 +29,11 @@ export const register = async (req, res) => {
         createAt: userSaved.createdAt,
         updateAt: userSaved.updateAt,
       });
-    } else {
-      res.status(400).json({ message: "User already exists" });
-    }
+   
+     
+    
   } catch (error) {
-     res.status(500).json({ message: error.message });
+    res.status(500).json({ message: error });
     
   }
 };
