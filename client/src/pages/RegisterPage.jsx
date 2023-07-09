@@ -1,13 +1,15 @@
 import { useForm } from "react-hook-form";
 import { useAuth } from "../context/AuthContext";
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 function RegisterPage() {
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
+
+  
 
   const { signup, isAuthenticated, errors: RegisterErrors } = useAuth();
   const navigate = useNavigate(); // este hook redirecciona a la pagina que le indiques;
@@ -24,9 +26,11 @@ function RegisterPage() {
   });
 
   return (
+        <div className="flex items-center justify-center h-wh-[calc(100vh-100px)]">
+
     <div className="bg-zinc-800 max-w-md max-h-4 p-10 rounded-md">
       {RegisterErrors.map((error, i) => (
-        <div className="bg-red-500 p-2text-white">
+        <div className="bg-red-500 p-2text-white" key={i}>
           {error}
           </div>
       ))}
@@ -66,6 +70,10 @@ function RegisterPage() {
           Register
         </button>
       </form>
+      <p className="flex gap-x-2 justify-between mt-5 ">
+         Already have an account? <Link to="/login" className="text-sky-500">Login</Link>
+        </p>
+      </div>
     </div>
   );
 }
