@@ -27,8 +27,8 @@ function TaskFormPage() {
       updateTask(params.id, data);
     }else{
       createTask(data);
+      navigate("/tasks");
     }
-    navigate("/tasks");
    
   });
 
