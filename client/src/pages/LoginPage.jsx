@@ -1,70 +1,65 @@
-import { useForm } from "react-hook-form";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/authContext";
 import { Link, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
 import { useEffect } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Card, Message, Button, Input, Label } from "../components/ui";
+import { loginSchema } from "../schemas/auth";
 
-function loginPage() {
+export function LoginPage() {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
-
-  const { signin, errors: signinErrors,isAuthenticated } = useAuth();
+  } = useForm({
+    resolver: zodResolver(loginSchema),
+  });
+  const { signin, errors: loginErrors, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
-  const onSubmit = handleSubmit((data) => {
-    signin(data);
-  
-  });
+  const onSubmit = (data) => signin(data);
 
   useEffect(() => {
     if (isAuthenticated) {
       navigate("/tasks");
     }
-  },[isAuthenticated]);
+  }, [isAuthenticated]);
 
   return (
-    <div className="flex items-center justify-center h-wh-[calc(100vh-100px)]">
-      <div className="bg-zinc-800 max-w-md w-full p-10 rounded-md">
-        {signinErrors.map((error, i) => (
-          <div key={i} className="bg-red-500 p-2text-white text-center">
-            {error}
-          </div>
+    <div className="h-[calc(100vh-100px)] flex items-center justify-center">
+      <Card>
+        {loginErrors.map((error, i) => (
+          <Message message={error} key={i} />
         ))}
-        <h1 className="text-2xl font-bold text-white">Login</h1>
-        <form onSubmit={onSubmit}>
-          <input
-            className="w-full bg-zinc-700 text-white px-4 py-2 rounded-md mt-5"
+        <h1 className="text-2xl font-bold">Login</h1>
+
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Label htmlFor="email">Email:</Label>
+          <Input
+            label="Write your email"
             type="email"
-            placeholder="Email"
+            name="email"
+            placeholder="youremail@domain.tld"
             {...register("email", { required: true })}
           />
-          {errors.email && (
-            <p className="text-red-500 text-sm">email is required</p>
-          )}
-          <input
-            className="w-full bg-zinc-700 text-white px-4 py-2 rounded-md mt-5"
+          <p>{errors.email?.message}</p>
+
+          <Label htmlFor="password">Password:</Label>
+          <Input
             type="password"
-            placeholder="Password"
-            {...register("password", { required: true })}
+            name="password"
+            placeholder="Write your password"
+            {...register("password", { required: true, minLength: 6 })}
           />
-          {errors.password && (
-            <p className="text-red-500 text-sm mt-2">password is required</p>
-          )}
-          <button
-            className="w-full bg-blue-500 text-white px-4 py-2 rounded-md mt-5"
-            type="submit"
-          >
-            Login
-          </button>
+          <p>{errors.password?.message}</p>
+
+          <Button>Login</Button>
         </form>
-        <p className="flex gap-x-2 justify-between mt-5 ">
+
+        <p className="flex gap-x-2 justify-between">
           Don't have an account? <Link to="/register" className="text-sky-500">Sign up</Link>
         </p>
-      </div>
+      </Card>
     </div>
   );
 }
-
-export default loginPage;

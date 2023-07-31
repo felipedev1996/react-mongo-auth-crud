@@ -1,18 +1,10 @@
-import axios from "./axios.js";
+import axios from "./axios";
 
-// const API = 'http://localhost:4000/api';
+export const registerRequest = async (user) =>
+  axios.post(`/auth/register`, user);
 
-export const registerRequest = (user) => axios.post("/register", user);
+export const loginRequest = async (user) => axios.post(`/auth/login`, user);
 
-export const loginRequest = (user) => axios.post("/login", user);
-export const logoutRequest = (user) => axios.post("/logout");
+export const verifyTokenRequest = async () => axios.get(`/auth/verify`);
 
-// export const logoutRequest = () => axios.get("/logout");
-
-export const getTasksRequest = () => axios.get("/tasks");
-
-export const verifyTokenRequest = () => axios.get("/verify");
-
-
-// no esta implementada esta funcion en la aplicacion solo queda de ejemplo 
-// export const logout = () => axios.get("/logout");
+export const logoutRequest = async () => axios.post(`/auth/logout`);

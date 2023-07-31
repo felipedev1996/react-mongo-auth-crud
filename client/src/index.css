@@ -2,10 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+  background: #202020;
+  color: white;
+}
 
-body{
-  background-color: #202020;
-  color: wheat;
-  font-family: 'Roboto', sans-serif;
-
+.content-container {
+  height: calc(100vh - theme("spacing.20"));
 }

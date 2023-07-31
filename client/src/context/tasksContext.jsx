@@ -3,6 +3,7 @@ import {
   createTaskRequest,
   deleteTaskRequest,
   getTasksRequest,
+  getTaskRequest,
   updateTaskRequest,
 } from "../api/tasks";
 
@@ -10,33 +11,31 @@ const TaskContext = createContext();
 
 export const useTasks = () => {
   const context = useContext(TaskContext);
-  if (!context) {
-    throw new Error("useTask must be used within a TaskProvider");
-  }
+  if (!context) throw new Error("useTasks must be used within a TaskProvider");
   return context;
 };
+
 export function TaskProvider({ children }) {
   const [tasks, setTasks] = useState([]);
 
   const getTasks = async () => {
+    const res = await getTasksRequest();
+    setTasks(res.data);
+  };
+
+  const deleteTask = async (id) => {
     try {
-      const res = await getTasksRequest();
-      setTasks(res.data);
+      const res = await deleteTaskRequest(id);
+      if (res.status === 204) setTasks(tasks.filter((task) => task._id !== id));
     } catch (error) {
       console.log(error);
     }
   };
 
   const createTask = async (task) => {
-    // console.log('task');
-    const res = await createTaskRequest(task);
-    console.log(res.data);
-  };
-
-  const deleteTask = async (id) => {
     try {
-      await deleteTaskRequest(id);
-      if (res.status === 204) setTasks(tasks.filter((task) => task._id !== id));
+      const res = await createTaskRequest(task);
+      console.log(res.data);
     } catch (error) {
       console.log(error);
     }
@@ -47,7 +46,7 @@ export function TaskProvider({ children }) {
       const res = await getTaskRequest(id);
       return res.data;
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -55,13 +54,20 @@ export function TaskProvider({ children }) {
     try {
       await updateTaskRequest(id, task);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
-  }
+  };
 
   return (
     <TaskContext.Provider
-      value={{ tasks, createTask, getTasks, deleteTask, getTask,updateTask }}
+      value={{
+        tasks,
+        getTasks,
+        deleteTask,
+        createTask,
+        getTask,
+        updateTask,
+      }}
     >
       {children}
     </TaskContext.Provider>

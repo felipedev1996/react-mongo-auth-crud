@@ -1,81 +1,92 @@
-import { useForm } from "react-hook-form";
-import { useAuth } from "../context/AuthContext";
 import { useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
-function RegisterPage() {
+import { useAuth } from "../context/authContext";
+import { Link, useNavigate } from "react-router-dom";
+import { Card, Message, Button, Input, Label } from "../components/ui";
+import { useForm } from "react-hook-form";
+import { registerSchema } from "../schemas/auth";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+function Register() {
+  const { signup, errors: registerErrors, isAuthenticated } = useAuth();
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    resolver: zodResolver(registerSchema),
+  });
+  const navigate = useNavigate();
 
-  
-
-  const { signup, isAuthenticated, errors: RegisterErrors } = useAuth();
-  const navigate = useNavigate(); // este hook redirecciona a la pagina que le indiques;
+  const onSubmit = async (value) => {
+    await signup(value);
+  };
 
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/tasks");
-    }
+    if (isAuthenticated) navigate("/tasks");
   }, [isAuthenticated]);
 
-  const onSubmit = handleSubmit(async (values) => {
-    await signup(values);
-    // console.log(values);
-  });
-
   return (
-        <div className="flex items-center justify-center h-wh-[calc(100vh-100px)]">
+    <div className="h-[calc(100vh-100px)] flex items-center justify-center">
+      <Card>
+        {registerErrors.map((error, i) => (
+          <Message message={error} key={i} />
+        ))}
+        <h1 className="text-3xl font-bold">Register</h1>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Label htmlFor="username">Username:</Label>
+          <Input
+            type="text"
+            name="username"
+            placeholder="Write your name"
+            {...register("username")}
+            autoFocus
+          />
+          {errors.username?.message && (
+            <p className="text-red-500">{errors.username?.message}</p>
+          )}
 
-    <div className="bg-zinc-800 max-w-md max-h-4 p-10 rounded-md">
-      {RegisterErrors.map((error, i) => (
-        <div className="bg-red-500 p-2text-white" key={i}>
-          {error}
-          </div>
-      ))}
-      <form onSubmit={onSubmit}>
-        <input
-          className="w-full bg-zinc-700 text-white px-4 py-2 rounded-md mt-5"
-          type="text"
-          placeholder="Username"
-          {...register("username", { required: true })}
-        />
-        {errors.username && (
-          <p className="text-red-500 text-sm">username is required</p>
-        )}
+          <Label htmlFor="email">Email:</Label>
+          <Input
+            name="email"
+            placeholder="youremail@domain.tld"
+            {...register("email")}
+          />
+          {errors.email?.message && (
+            <p className="text-red-500">{errors.email?.message}</p>
+          )}
 
-        <input
-          className="w-full bg-zinc-700 text-white px-4 py-2 rounded-md mt-5"
-          type="email"
-          placeholder="Email"
-          {...register("email", { required: true })}
-        />
-        {errors.email && (
-          <p className="text-red-500 text-sm">email is required</p>
-        )}
-        <input
-          className="w-full bg-zinc-700 text-white px-4 py-2 rounded-md mt-5"
-          type="password"
-          placeholder="Password"
-          {...register("password", { required: true })}
-        />
-        {errors.password && (
-          <p className="text-red-500 text-sm mt-2">password is required</p>
-        )}
-        <button
-          className="w-full bg-blue-500 text-white px-4 py-2 rounded-md mt-5"
-          type="submit"
-        >
-          Register
-        </button>
-      </form>
-      <p className="flex gap-x-2 justify-between mt-5 ">
-         Already have an account? <Link to="/login" className="text-sky-500">Login</Link>
+          <Label htmlFor="password">Password:</Label>
+          <Input
+            type="password"
+            name="password"
+            placeholder="********"
+            {...register("password")}
+          />
+          {errors.password?.message && (
+            <p className="text-red-500">{errors.password?.message}</p>
+          )}
+
+          <Label htmlFor="confirmPassword">Confirm Password:</Label>
+          <Input
+            type="password"
+            name="confirmPassword"
+            placeholder="********"
+            {...register("confirmPassword")}
+          />
+          {errors.confirmPassword?.message && (
+            <p className="text-red-500">{errors.confirmPassword?.message}</p>
+          )}
+          <Button>Submit</Button>
+        </form>
+        <p>
+          Already Have an Account?
+          <Link className="text-sky-500" to="/login">
+            Login
+          </Link>
         </p>
-      </div>
+      </Card>
     </div>
   );
 }
 
-export default RegisterPage;
+export default Register;
