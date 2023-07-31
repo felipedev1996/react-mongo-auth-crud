@@ -13,7 +13,6 @@ npm run dev
 
 ```sh
 git clone https://github.com/felipedev1996/react-mongo-auth-crud.git
-cd mern-tasks-auth
 npm i
 npm run build
 npm start
